@@ -262,6 +262,27 @@ JNIEXPORT jint JNICALL Java_de_entropia_can_CanSocket__1fetchInterfaceMtu
 	}
 }
 
+JNIEXPORT void JNICALL Java_de_entropia_can_CanSocket__1setfilter
+(JNIEnv *env, jclass obj, jint fd, jintArray fid, jint fmask)
+{
+	jsize len = env->GetArrayLength(fid);
+	
+	struct can_filter rfilter[len];
+	
+	jint *body = env->GetIntArrayElements(fid, 0);
+	
+	int i;
+	for (i=0; i<len; i++) {	
+		rfilter[i].can_id = body[i];
+		rfilter[i].can_mask = fmask;
+	}
+	env->ReleaseIntArrayElements(fid, body, 0);
+	
+	if (setsockopt(fd, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(rfilter))){
+		throwIOExceptionErrno(env, errno);
+	}
+}
+
 JNIEXPORT void JNICALL Java_de_entropia_can_CanSocket__1setsockopt
 (JNIEnv *env, jclass obj, jint fd, jint op, jint stat)
 {

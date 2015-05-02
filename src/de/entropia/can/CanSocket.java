@@ -125,6 +125,8 @@ public final class CanSocket implements Closeable {
 	    final int stat) throws IOException;
     private static native int _getsockopt(final int fd, final int op)
 	    throws IOException;
+	private static native void _setfilter(final int fd, final int[] fid, 
+	final int fmask) throws IOException;
     
     public final static class CanId implements Cloneable {
         private int _canId = 0;
@@ -424,4 +426,9 @@ public final class CanSocket implements Closeable {
     public boolean getRecvOwnMsgsMode() throws IOException {
 	return _getsockopt(_fd, CAN_RAW_RECV_OWN_MSGS) == 1;
     }
+	
+	public void setfilter(final int[] fid, final int fmask) throws IOException {
+	_setfilter(_fd, fid, fmask);
+    }
+
 }
